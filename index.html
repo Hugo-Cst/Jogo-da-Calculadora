@@ -11,11 +11,15 @@
             text-align: center;
             padding: 20px;
         }
-        #Richard {
-            background: url("https://yt3.googleusercontent.com/g_-_Ip-w99EKMxkGSh6v2B4aDl1XOb1E9bpWE74rCdlC2pE97W14DKEHm_M50GId2vvo7dWoRA=s900-c-k-c0x00ffffff-no-rj") no-repeat;
-            width: 200px;
-            height: 200px;
-            margin: auto;
+        #Richard {            
+            background: url("https://yt3.googleusercontent.com/g_-_Ip-w99EKMxkGSh6v2B4aDl1XOb1E9bpWE74rCdlC2pE97W14DKEHm_M50GId2vvo7dWoRA=s900-c-k-c0x00ffffff-no-rj") center/cover no-repeat;
+            width: 250px;
+            height: 250px;
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            border-radius: 10%;
+            box-shadow: 0 0 10px #000;
         }
 
         #calculator {
@@ -87,12 +91,12 @@
     </style>
 </head>
 <body>
+<div>
     <div>
         <h1 style="margin-bottom: 0px;">Jogo da Calculadora</h1>
-        <h5 style="margin-top: 0px; margin-bottom: 40px;">By Richard Watterson</h4>
-        <div id="Richard"></div>
+        <h5 style="margin-top: 0px; margin-bottom: 40px;">By Richard Watterson</h4> 
     </div>
-    
+    <div id="Richard"></div>
     <div id="calculator">
         <div id="display">0</div>
         <div class="health-bar">
@@ -126,7 +130,7 @@
             <li><strong>Curar:</strong> Restaurar a tua vida</li>
         </ul>
     </div>
-
+</div>
     <script>
         // Display e registo
         const display = document.getElementById('display');
