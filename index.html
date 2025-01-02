@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jogo da Calculadora</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+            padding: 20px;
+        }
+        #Richard {
+            background: url("https://yt3.googleusercontent.com/g_-_Ip-w99EKMxkGSh6v2B4aDl1XOb1E9bpWE74rCdlC2pE97W14DKEHm_M50GId2vvo7dWoRA=s900-c-k-c0x00ffffff-no-rj") no-repeat;
+            width: 200px;
+            height: 200px;
+            margin: auto;
+        }
+
+        #calculator {
+            margin: auto;
+            width: 300px;
+            background: #333;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px #000;
+        }
+        #display {
+            background: #000;
+            color: #0f0;
+            font-size: 1.5rem;
+            height: 50px;
+            text-align: right;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+        .button {
+            width: 60px;
+            height: 60px;
+            margin: 5px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .number { background: #fff; }
+        .action { background: #fa3131; color: #fff; }
+        .special { background: #58eb3b; color: #fff; }
+        .disabled { background: #555; color: #aaa; pointer-events: none; }
+        #battle-log {
+            margin-top: 20px;
+            background: #222;
+            color: #fff;
+            padding: 10px;
+            border-radius: 5px;
+            height: 150px;
+            overflow-y: auto;
+        }
+        #legend {
+            margin-top: 20px;
+            text-align: left;
+            background: #eee;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .health-bar {
+            width: 100%;
+            background: #555;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            position: relative;
+        }
+        .health-bar-inner {
+            height: 20px;
+            border-radius: 5px;
+        }
+        .player-health {
+            background: #4caf50;
+            width: 100%;
+        }
+        .boss-health {
+            background: #f44336;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <h1 style="margin-bottom: 0px;">Jogo da Calculadora</h1>
+        <h5 style="margin-top: 0px; margin-bottom: 40px;">By Richard Watterson</h4>
+        <div id="Richard"></div>
+    </div>
+    
+    <div id="calculator">
+        <div id="display">0</div>
+        <div class="health-bar">
+            <div id="player-health" class="health-bar-inner player-health"></div>
+        </div>
+        <div class="health-bar">
+            <div id="boss-health" class="health-bar-inner boss-health"></div>
+        </div>
+        <button class="button number" data-value="8">8</button>
+        <button class="button number" data-value="9">9</button>
+        <button class="button number" data-value="7">7</button>
+        <button class="button action" data-action="attack">Lutar</button><br>
+        <button class="button number" data-value="5">5</button>
+        <button class="button number" data-value="1">1</button>
+        <button class="button number" data-value="0">0</button>
+        <button class="button special" data-action="heal">Curar</button>
+    </div>
+    <div id="battle-log">
+        <p>Battle Log</p>
+    </div>
+    <div id="legend">
+        <h2>Legenda:</h2>
+        <ul>
+            <li><strong>8:</strong> Ataque Pesado (dano alto, 2 usos)</li>
+            <li><strong>9:</strong> Ataque Normal (dano médio, 4 usos)</li>
+            <li><strong>7:</strong> Ataque Especial (dano + chance de bónus, 3 usos)</li>
+            <li><strong>5:</strong> Cura (3 usos)</li>
+            <li><strong>1:</strong> Ataque Básico (dano baixo)</li>
+            <li><strong>0:</strong> Esquivar (evitar o próximo ataque)</li>
+            <li><strong>Lutar:</strong> Usar a ação selecionada</li>
+            <li><strong>Curar:</strong> Restaurar a tua vida</li>
+        </ul>
+    </div>
+
+    <script>
+        // Display e registo
+        const display = document.getElementById('display');
+        const log = document.getElementById('battle-log');
+        const playerHealthBar = document.getElementById('player-health');
+        const bossHealthBar = document.getElementById('boss-health');
+        let bossHP = 100;
+        let playerHP = 100;
+        let hattack = 2;
+        let sattack = 3;
+        let nattack = 4;
+        let healUses = 3;
+        let score = 0;
+
+        function updateHealthBars() {
+            playerHealthBar.style.width = `${playerHP}%`;
+            bossHealthBar.style.width = `${bossHP}%`;
+        }
+
+        function updateLog(message, color = '#fff') {
+            const p = document.createElement('p');
+            p.textContent = message;
+            p.style.color = color;
+            log.appendChild(p);
+            log.scrollTop = log.scrollHeight;
+        }
+
+        function displayNumber(value) {
+            display.textContent = value;
+            if (value == '8')
+            {
+              value = {function: "Ataque Pesado"};  
+            }
+            else if (value == '9')
+            {
+              value = {function: "Ataque Normal"};  
+            }
+            else if (value == '7')
+            {
+              value = {function: "Ataque Especial"};  
+            }
+            else if (value == '5')
+            {
+              value = {function: "Cura"};  
+            }
+            else if (value == '1')
+            {
+              value = {function: "Ataque Básico"};  
+            }
+            else if (value == '0')
+            {
+              value = {function: "Esquiva"};  
+            }
+            else
+            {
+              value = {function: "Erro"};  
+            }
+            updateLog(`Selecionaste ${value.function}`);
+        }
+
+        function performAction(value) {
+            if (value === '8') {
+                if (hattack > 0) {
+                    const damage = Math.floor(Math.random() * 20) + 15;
+                    bossHP -= damage;
+                    score += damage;
+                    updateLog(`Usaste Ataque Pesado e causaste ${damage} de dano!`, '#f44336');
+                    hattack--;
+                }
+                else {
+                    updateLog("Sem ataques pesados restantes!", '#eb3b5a');
+                }
+            } else if (value === '9') {
+                if (nattack > 0) {
+                    const damage = Math.floor(Math.random() * 15) + 10;
+                    bossHP -= damage;
+                    score += damage;
+                    updateLog(`Usaste Ataque Normal e causaste ${damage} de dano!`, '#ff9800');
+                    nattack--;
+                }
+                else {
+                    updateLog("Sem ataques normais restantes!", '#eb3b5a');
+                }
+            } else if (value === '7') 
+                {
+                if (sattack > 0) {
+                    const damage = Math.floor(Math.random() * 10) + 5;
+                    bossHP -= damage;
+                    score += damage;
+                    updateLog(`Usaste Ataque Especial e causaste ${damage} de dano!`, '#03a9f4');
+                    if (Math.random() < 0.3) {
+                        const bonus = Math.floor(Math.random() * 10) + 5;
+                        bossHP -= bonus;
+                        score += bonus;
+                        updateLog(`Acerto bónus! Mais ${bonus} de dano extra!`, '#03a9f4');
+                        sattack--;
+                    }
+                    } 
+                    else {
+                        updateLog("Sem ataques especiais restantes!", '#eb3b5a');
+                    }
+                }
+            else if (value === '5') {
+                if (healUses > 0) {
+                    const heal = Math.floor(Math.random() * 20) + 10;
+                    playerHP = Math.min(playerHP + heal, 100);
+                    healUses--;
+                    updateLog(`Curaste-te e recuperaste ${heal} de vida! (${healUses} curas restantes)`, '#8bc34a');
+                } else {
+                    updateLog("Sem curas restantes!", '#eb3b5a');
+                }
+            } else if (value === '1') {
+                const damage = Math.floor(Math.random() * 10) + 5;
+                bossHP -= damage;
+                score += damage;
+                updateLog(`Usaste Ataque Básico e causaste ${damage} de dano!`, '#ffeb3b');
+            } else if (value === '0') {
+                updateLog("Usaste Esquiva! Vais evitar o próximo ataque.", '#607d8b');
+                return; // Salta o turno do boss
+            }
+
+            if (bossHP <= 0) {
+                updateLog(`Derrotaste o boss! Pontuação final: ${score}`, '#8bc34a');
+                disableButtons();
+            } else {
+                updateHealthBars();
+                bossTurn();
+            }
+        }
+
+        function attackBoss() {
+            performAction(display.textContent);
+        }
+
+        function healPlayer() {
+            performAction('5');
+        }
+
+        function bossTurn() {
+            const damage = Math.floor(Math.random() * 15) + 5;
+            playerHP -= damage;
+            updateLog(`O boss atacou-te e causou ${damage} de dano!`, '#f44336');
+            if (playerHP <= 0) {
+                updateLog("Foste derrotado pelo boss...", '#f44336');
+                disableButtons();
+            }
+            updateHealthBars();
+        }
+
+        function disableButtons() {
+            document.querySelectorAll('.button').forEach(button => {
+                button.classList.add('disabled');
+            });
+        }
+
+        // Event listeners para os botões
+        document.querySelectorAll('.button').forEach(button => {
+            button.addEventListener('click', () => {
+                const value = button.dataset.value;
+                const action = button.dataset.action;
+
+                if (value) {
+                    displayNumber(value);
+                }
+
+                if (action === 'attack') {
+                    attackBoss();
+                }
+
+                if (action === 'heal') {
+                    healPlayer();
+                }
+            });
+        });
+
+        updateHealthBars();
+    </script>
+</body>
+</html>
